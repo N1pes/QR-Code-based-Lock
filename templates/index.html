@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ROIS-Locker</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        font-size: 20px;
+      }
+
+      h1 {
+        font-size: 8rem;
+        margin-bottom: 1rem;
+      }
+
+      img {
+        height: 50%;
+        margin-bottom: 1rem;
+      }
+
+      #timer {
+        font-size: 4rem;
+        margin-top: 1rem;
+      }
+
+      a {
+        color: blue;
+        text-decoration: underline;
+      }
+
+    </style>
+    <script>
+      function updateTimer(secondsLeft) {
+        var timerEl = document.getElementById("timer");
+        if (secondsLeft > 0) {
+          timerEl.textContent = secondsLeft + "秒";
+          setTimeout(function() { updateTimer(secondsLeft - 1); }, 1000);
+        } else {
+          timerEl.innerHTML = '<a href="/get_uuid">二维码已过期，点此重新获取</a>';
+        }
+      }
+      function clearCookies() {
+        var cookies = document.cookie.split("; ");
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i];
+          var eqPos = cookie.indexOf("=");
+          var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+        }
+        location.reload();
+      }
+      
+      function handleQrCodeClick() {
+        if (!handleQrCodeClick.clicks) {
+          clearCookies();
+          handleQrCodeClick.clicks = 0;
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>ROIS-Locker</h1>
+    {% if uuid %}
+      <img src="/get_qrcode?uuid={{ uuid }}" alt="qrcode" onclick="handleQrCodeClick()">
+      <p id="timer"></p>
+      <script>updateTimer({{ seconds_left }});</script>
+    {% else %}
+      
+    {% endif %}
+  </body>
+</html>
